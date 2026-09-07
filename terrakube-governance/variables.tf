@@ -9,9 +9,15 @@ variable "terrakube_pat" {
   description = "Terrakube Personal Access Token (PAT) with Admin permissions"
 }
 
-variable "organization_id" {
+variable "terrakube_hostname" {
   type        = string
-  description = "The target Organization UUID in Terrakube"
+  default     = "terrakube-api.platform.local"
+  description = "Terrakube API hostname used in CLI backend cloud {} block (e.g., terrakube-api.platform.local)"
+}
+
+variable "organization_name" {
+  type        = string
+  description = "The target Organization name in Terrakube (e.g., 'simple')"
 }
 
 variable "vcs_id" {
@@ -31,8 +37,14 @@ variable "policy_branch" {
   description = "Target Git branch or semantic release tag (e.g., v1.0.0)"
 }
 
-variable "workspace_ids" {
-  type        = list(string)
-  default     = []
-  description = "List of workspace UUIDs to selectively attach policy sets to"
+variable "workspace_prefix" {
+  type        = string
+  default     = "opa-eval-"
+  description = "Prefix for automatically generated test workspaces"
+}
+
+variable "iac_version" {
+  type        = string
+  default     = "1.5.7"
+  description = "Terraform version configured for the generated workspaces"
 }

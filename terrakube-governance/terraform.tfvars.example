@@ -1,9 +1,9 @@
-terrakube_api_url = "https://terrakube-api.platform.local"
-terrakube_pat     = "USER_PAT_TOKEN"
-organization_id   = "00000000-0000-0000-0000-000000000000"
-vcs_id            = "11111111-1111-1111-1111-111111111111"
-policy_repo       = "terrakube-io/terrakube-opa-reference"
-policy_branch     = "main"
-workspace_ids     = [
-  "22222222-2222-2222-2222-222222222222"
-]
+terrakube_api_url  = "https://terrakube-api.platform.local"
+terrakube_hostname = "terrakube-api.platform.local"
+terrakube_pat      = "USER_PAT_TOKEN"
+organization_name  = "simple"
+vcs_id             = "11111111-1111-1111-1111-111111111111"
+policy_repo        = "terrakube-io/terrakube-opa-reference"
+policy_branch      = "main"
+workspace_prefix   = "opa-eval-"
+iac_version        = "1.5.7"

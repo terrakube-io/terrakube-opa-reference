@@ -132,14 +132,45 @@ regal lint lib/ bundles/
 
 ## Deploying to Terrakube via Infrastructure-as-Code
 
-The `terrakube-governance/` directory provides sample Terraform code using `terrakube-io/terrakube`:
+The `terrakube-governance/` directory provides sample Terraform code using the `terrakube-io/terrakube` provider to provision policy sets, create CLI-driven test workspaces, and bind policy attachments automatically:
 
 ```bash
 cd terrakube-governance/
 cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your Terrakube API URL and Organization UUID
+# Edit terraform.tfvars with your Terrakube API URL and Organization Name (e.g. 'simple')
 terraform init
 terraform apply
 ```
 
-This creates the Policy Sets and attaches them to target workspaces across your Terrakube organizations.
+`terraform apply` automatically:
+1. Provisions the 5 PolicySets (`common-mandatory-tagging`, `common-blast-radius`, `aws-security-baseline`, `azure-security-baseline`, `gcp-security-baseline`).
+2. Creates 4 dedicated CLI test workspaces with randomized names (e.g., `opa-eval-compliant-a1b2c3`, `opa-eval-advisory-a1b2c3`, `opa-eval-soft-fail-a1b2c3`, `opa-eval-hard-fail-a1b2c3`).
+3. Binds scenario-targeted policy attachments to each workspace.
+4. Generates a tailored `backend.tf` inside each `examples/<scenario>/` directory configuring the remote CLI-driven workflow.
+
+### Running the Live Tests via CLI
+
+Once `terrakube apply` in `terrakube-governance/` completes, you can test each scenario immediately using your local Terraform CLI:
+
+```bash
+# 1. Compliant scenario (All checks PASS)
+cd examples/compliant-workspace
+terraform init
+terraform plan
+
+# 2. Advisory warning scenario (Missing tags -> emits ANSI warnings, plan completes)
+cd ../advisory-warning-workspace
+terraform init
+terraform plan
+
+# 3. Soft Mandatory scenario (High blast radius -> job moves to WAITING_APPROVAL)
+cd ../soft-fail-workspace
+terraform init
+terraform plan
+
+# 4. Hard Mandatory scenario (Unencrypted EBS / open S3 -> exit code 1, apply BLOCKED)
+cd ../hard-fail-workspace
+terraform init
+terraform plan
+```
+
