@@ -1,0 +1,53 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.compliant",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "compliant",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "my-compliant-secure-bucket",
+          "tags": {
+            "Environment": "production",
+            "Owner": "devops@terrakube.io",
+            "CostCenter": "CC-900"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_ebs_volume.compliant",
+      "mode": "managed",
+      "type": "aws_ebs_volume",
+      "name": "compliant",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "availability_zone": "us-east-1a",
+          "encrypted": true,
+          "size": 40,
+          "tags": {
+            "Environment": "production",
+            "Owner": "devops@terrakube.io",
+            "CostCenter": "CC-900"
+          }
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "registry.terraform.io/hashicorp/aws"
+      }
+    }
+  }
+}

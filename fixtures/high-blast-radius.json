@@ -1,0 +1,18 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {"address": "aws_instance.vm[0]", "mode": "managed", "type": "aws_instance", "change": {"actions": ["delete"]}},
+    {"address": "aws_instance.vm[1]", "mode": "managed", "type": "aws_instance", "change": {"actions": ["delete"]}},
+    {"address": "aws_instance.vm[2]", "mode": "managed", "type": "aws_instance", "change": {"actions": ["delete"]}},
+    {"address": "aws_instance.vm[3]", "mode": "managed", "type": "aws_instance", "change": {"actions": ["delete"]}},
+    {"address": "aws_instance.vm[4]", "mode": "managed", "type": "aws_instance", "change": {"actions": ["delete"]}},
+    {"address": "aws_instance.vm[5]", "mode": "managed", "type": "aws_instance", "change": {"actions": ["delete"]}},
+    {"address": "aws_instance.vm[6]", "mode": "managed", "type": "aws_instance", "change": {"actions": ["delete"]}}
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {"name": "registry.terraform.io/hashicorp/aws"}
+    }
+  }
+}

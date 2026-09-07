@@ -1,0 +1,9 @@
+# .gitignore for Terrakube OPA Reference
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+.DS_Store
+*.log
+.terrakube-policies/

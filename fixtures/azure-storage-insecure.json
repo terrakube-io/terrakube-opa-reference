@@ -1,0 +1,29 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_storage_account.insecure",
+      "mode": "managed",
+      "type": "azurerm_storage_account",
+      "name": "insecure",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "insecurestorage123",
+          "enable_https_traffic_only": false,
+          "min_tls_version": "TLS1_0"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "azurerm": {
+        "name": "registry.terraform.io/hashicorp/azurerm"
+      }
+    }
+  }
+}
