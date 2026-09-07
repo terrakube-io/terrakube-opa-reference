@@ -7,7 +7,7 @@ resource "terrakube_policy_set" "common_tagging" {
   vcs_id            = var.vcs_id
   repository        = var.policy_repo
   branch            = var.policy_branch
-  path              = "bundles/common/tagging"
+  folder            = "bundles/common/tagging"
 }
 
 # 2. Soft Mandatory Blast Radius Policy Set
@@ -19,7 +19,7 @@ resource "terrakube_policy_set" "blast_radius" {
   vcs_id            = var.vcs_id
   repository        = var.policy_repo
   branch            = var.policy_branch
-  path              = "bundles/common/blast_radius"
+  folder            = "bundles/common/blast_radius"
 }
 
 # 3. Hard Mandatory AWS Baseline Policy Set
@@ -31,7 +31,7 @@ resource "terrakube_policy_set" "aws_baseline" {
   vcs_id            = var.vcs_id
   repository        = var.policy_repo
   branch            = var.policy_branch
-  path              = "bundles/aws/baseline"
+  folder            = "bundles/aws/baseline"
 }
 
 # 4. Hard Mandatory Azure Baseline Policy Set
@@ -43,7 +43,7 @@ resource "terrakube_policy_set" "azure_baseline" {
   vcs_id            = var.vcs_id
   repository        = var.policy_repo
   branch            = var.policy_branch
-  path              = "bundles/azure/baseline"
+  folder            = "bundles/azure/baseline"
 }
 
 # 5. Hard Mandatory GCP Baseline Policy Set
@@ -55,5 +55,5 @@ resource "terrakube_policy_set" "gcp_baseline" {
   vcs_id            = var.vcs_id
   repository        = var.policy_repo
   branch            = var.policy_branch
-  path              = "bundles/gcp/baseline"
+  folder            = "bundles/gcp/baseline"
 }
