@@ -18,7 +18,7 @@ A comprehensive reference implementation, best-practice repository layout, and s
 
 ## Architecture Overview
 
-Terrakube adopts a centralized GitOps policy model paired with in-runner execution inside ephemeral executor containers:
+Terrakube adopts a centralized GitOps policy model paired with in-runner execution inside both **ephemeral** (Kubernetes Jobs) and **persistent** executor containers:
 
 ```mermaid
 flowchart TD
