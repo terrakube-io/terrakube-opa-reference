@@ -63,3 +63,41 @@ resource "terrakube_policy_attachment" "hard_fail_gcp_baseline" {
   policy_set_id = terrakube_policy_set.gcp_baseline.id
   workspace_id  = terrakube_workspace_cli.hard_fail.id
 }
+
+# ==============================================================================
+# Policy Attachments for Password Test Workspaces (Cloud-Free)
+# ==============================================================================
+
+# Compliant Password Workspace (attached to all 3 password policy sets to verify 0 violations)
+resource "terrakube_policy_attachment" "password_compliant_advisory" {
+  policy_set_id = terrakube_policy_set.password_advisory.id
+  workspace_id  = terrakube_workspace_cli.password_compliant.id
+}
+
+resource "terrakube_policy_attachment" "password_compliant_soft_mandatory" {
+  policy_set_id = terrakube_policy_set.password_soft_mandatory.id
+  workspace_id  = terrakube_workspace_cli.password_compliant.id
+}
+
+resource "terrakube_policy_attachment" "password_compliant_hard_mandatory" {
+  policy_set_id = terrakube_policy_set.password_hard_mandatory.id
+  workspace_id  = terrakube_workspace_cli.password_compliant.id
+}
+
+# Advisory Password Workspace (demonstrates warning when 12 <= length < 16)
+resource "terrakube_policy_attachment" "password_advisory_attachment" {
+  policy_set_id = terrakube_policy_set.password_advisory.id
+  workspace_id  = terrakube_workspace_cli.password_advisory.id
+}
+
+# Soft Mandatory Password Workspace (demonstrates SecOps WAITING_APPROVAL when 8 <= length < 12)
+resource "terrakube_policy_attachment" "password_soft_fail_attachment" {
+  policy_set_id = terrakube_policy_set.password_soft_mandatory.id
+  workspace_id  = terrakube_workspace_cli.password_soft_fail.id
+}
+
+# Hard Mandatory Password Workspace (demonstrates blocked apply when length < 8)
+resource "terrakube_policy_attachment" "password_hard_fail_attachment" {
+  policy_set_id = terrakube_policy_set.password_hard_mandatory.id
+  workspace_id  = terrakube_workspace_cli.password_hard_fail.id
+}

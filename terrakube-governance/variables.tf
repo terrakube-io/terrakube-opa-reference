@@ -48,3 +48,9 @@ variable "iac_version" {
   default     = "1.5.7"
   description = "Terraform version configured for the generated workspaces"
 }
+
+variable "override_team" {
+  type        = string
+  default     = "TERRAKUBE_ADMIN"
+  description = "Team authorized to approve soft_mandatory policy overrides"
+}

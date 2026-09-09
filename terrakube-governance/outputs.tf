@@ -25,6 +25,26 @@ output "workspaces" {
       name = terrakube_workspace_cli.hard_fail.name
       path = "examples/hard-fail-workspace"
     }
+    password_compliant = {
+      id   = terrakube_workspace_cli.password_compliant.id
+      name = terrakube_workspace_cli.password_compliant.name
+      path = "examples/password-compliant"
+    }
+    password_advisory = {
+      id   = terrakube_workspace_cli.password_advisory.id
+      name = terrakube_workspace_cli.password_advisory.name
+      path = "examples/password-advisory"
+    }
+    password_soft_fail = {
+      id   = terrakube_workspace_cli.password_soft_fail.id
+      name = terrakube_workspace_cli.password_soft_fail.name
+      path = "examples/password-soft-fail"
+    }
+    password_hard_fail = {
+      id   = terrakube_workspace_cli.password_hard_fail.id
+      name = terrakube_workspace_cli.password_hard_fail.name
+      path = "examples/password-hard-fail"
+    }
   }
   description = "Created CLI test workspaces and their local example paths"
 }
@@ -33,25 +53,25 @@ output "how_to_test" {
   value       = <<-EOT
     Test workspaces created successfully and backend.tf configured!
 
-    To test each scenario using the CLI-driven workflow:
+    Cloud-Free Password OPA Test Scenarios:
 
-    1. Compliant Scenario (Expects: PASS):
-       cd ../examples/compliant-workspace
+    1. Password Compliant (Expects: PASS - length 16):
+       cd ../examples/password-compliant
        terraform init
        terraform plan
 
-    2. Advisory Warning Scenario (Expects: ADVISORY warning in logs, run proceeds):
-       cd ../examples/advisory-warning-workspace
+    2. Password Advisory Warning (Expects: ADVISORY warning in logs, run proceeds - length 14):
+       cd ../examples/password-advisory
        terraform init
        terraform plan
 
-    3. Soft Mandatory Failure Scenario (Expects: WAITING_APPROVAL / SecOps override):
-       cd ../examples/soft-fail-workspace
+    3. Password Soft Mandatory Failure (Expects: WAITING_APPROVAL / SecOps override - length 10):
+       cd ../examples/password-soft-fail
        terraform init
        terraform plan
 
-    4. Hard Mandatory Failure Scenario (Expects: FAILED / apply blocked):
-       cd ../examples/hard-fail-workspace
+    4. Password Hard Mandatory Failure (Expects: FAILED / apply blocked - length 6):
+       cd ../examples/password-hard-fail
        terraform init
        terraform plan
   EOT

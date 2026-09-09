@@ -57,3 +57,40 @@ resource "terrakube_policy_set" "gcp_baseline" {
   branch            = var.policy_branch
   folder            = "bundles/gcp/baseline"
 }
+
+# 6. Advisory Password Length Policy Set
+resource "terrakube_policy_set" "password_advisory" {
+  organization_id   = data.terrakube_organization.org.id
+  name              = "password-length-advisory"
+  description       = "Advisory guardrail recommending password length >= 16 characters"
+  enforcement_level = "advisory"
+  vcs_id            = var.vcs_id
+  repository        = var.policy_repo
+  branch            = var.policy_branch
+  folder            = "bundles/password/advisory"
+}
+
+# 7. Soft Mandatory Password Length Policy Set
+resource "terrakube_policy_set" "password_soft_mandatory" {
+  organization_id   = data.terrakube_organization.org.id
+  name              = "password-length-soft-mandatory"
+  description       = "Soft mandatory guardrail requiring SecOps override if password length is between 8 and 11 characters"
+  enforcement_level = "soft_mandatory"
+  override_team     = var.override_team
+  vcs_id            = var.vcs_id
+  repository        = var.policy_repo
+  branch            = var.policy_branch
+  folder            = "bundles/password/soft_mandatory"
+}
+
+# 8. Hard Mandatory Password Length Policy Set
+resource "terrakube_policy_set" "password_hard_mandatory" {
+  organization_id   = data.terrakube_organization.org.id
+  name              = "password-length-hard-mandatory"
+  description       = "Hard mandatory guardrail blocking apply if password length is less than 8 characters"
+  enforcement_level = "hard_mandatory"
+  vcs_id            = var.vcs_id
+  repository        = var.policy_repo
+  branch            = var.policy_branch
+  folder            = "bundles/password/hard_mandatory"
+}
