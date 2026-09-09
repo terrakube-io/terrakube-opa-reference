@@ -150,27 +150,160 @@ terraform apply
 
 ### Running the Live Tests via CLI
 
-Once `terrakube apply` in `terrakube-governance/` completes, you can test each scenario immediately using your local Terraform CLI:
+Once `terraform apply` in `terrakube-governance/` completes, you can test each scenario immediately using your local Terraform CLI.
+
+#### 1. Compliant Scenario (`examples/compliant-workspace`)
+All resources satisfy tagging and security baseline requirements. The run proceeds with a clean pass.
 
 ```bash
-# 1. Compliant scenario (All checks PASS)
 cd examples/compliant-workspace
 terraform init
 terraform plan
+```
 
-# 2. Advisory warning scenario (Missing tags -> emits ANSI warnings, plan completes)
+```text
+Terraform 1.5.7
+aws_ebs_volume.example: Plan to create
+aws_s3_bucket.example: Plan to create
+aws_s3_bucket_public_access_block.example: Plan to create
+Plan: 3 to add, 0 to change, 0 to destroy.
+
+============================================================
+       TERRAKUBE OPEN POLICY AGENT (OPA) GOVERNANCE        
+============================================================
+
+🔍 Checking Policy Set: common-mandatory-tagging (Level: ADVISORY)
+  ✔ All policy rules passed.
+
+🔍 Checking Policy Set: aws-security-baseline (Level: HARD_MANDATORY)
+  ✔ All policy rules passed.
+
+------------------------------------------------------------
+✅ [OPA POLICY SUCCESS] All policy guardrails passed successfully.
+============================================================
+```
+
+---
+
+#### 2. Advisory Warning Scenario (`examples/advisory-warning-workspace`)
+The S3 bucket is missing required `Owner` and `CostCenter` tags. Terrakube logs advisory warnings, but allows the plan to complete successfully without blocking deployment.
+
+```bash
 cd ../advisory-warning-workspace
 terraform init
 terraform plan
+```
 
-# 3. Soft Mandatory scenario (High blast radius -> job moves to WAITING_APPROVAL)
+```text
+Terraform 1.5.7
+aws_s3_bucket.example: Plan to create
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+============================================================
+       TERRAKUBE OPEN POLICY AGENT (OPA) GOVERNANCE        
+============================================================
+
+🔍 Checking Policy Set: common-mandatory-tagging (Level: ADVISORY)
+  ⚠️ [WARN] Rule 'common_mandatory_tagging' on 'aws_s3_bucket.example': Resource is missing mandatory tags: ["CostCenter", "Owner"]
+
+------------------------------------------------------------
+✅ [OPA POLICY SUCCESS] All policy guardrails passed successfully.
+============================================================
+```
+
+---
+
+#### 3. Soft Mandatory Scenario (`examples/soft-fail-workspace`)
+Triggers high blast radius or sensitive change thresholds, placing the run into `WAITING_APPROVAL` until authorized in Terrakube.
+
+```bash
 cd ../soft-fail-workspace
 terraform init
 terraform plan
+```
 
-# 4. Hard Mandatory scenario (Unencrypted EBS / open S3 -> exit code 1, apply BLOCKED)
+---
+
+#### 4. Hard Mandatory Failure Scenario (`examples/hard-fail-workspace`)
+The configuration includes an unencrypted EBS volume and an S3 bucket with public access unblocked. Terrakube detects hard-mandatory policy violations, halts the run, and exits with code `1`—strictly blocking `terraform apply`.
+
+```bash
 cd ../hard-fail-workspace
 terraform init
 terraform plan
 ```
+
+```text
+Running plan in HCP Terraform. Output will stream here. Pressing Ctrl-C
+will stop streaming the logs, but will not stop the plan running remotely.
+
+Preparing the remote plan...
+
+Waiting for the plan to start...
+
+***************************************
+Running Terraform PLAN
+***************************************
+Terraform 1.5.7
+aws_ebs_volume.insecure: Plan to create
+aws_s3_bucket.insecure: Plan to create
+aws_s3_bucket_public_access_block.insecure: Plan to create
+Plan: 3 to add, 0 to change, 0 to destroy.
+
+Terraform will perform the following actions:
+
+  # aws_ebs_volume.insecure will be created
+  + resource "aws_ebs_volume" "insecure" {
+      + availability_zone = "us-east-1a"
+      + encrypted         = false
+      + size              = 50
+      + tags              = {
+          + "CostCenter"  = "CC-303"
+          + "Environment" = "production"
+          + "Owner"       = "devops@terrakube.io"
+        }
+    }
+
+  # aws_s3_bucket.insecure will be created
+  + resource "aws_s3_bucket" "insecure" {
+      + bucket                      = "terrakube-opa-insecure-bucket"
+      + tags                        = {
+          + "CostCenter"  = "CC-303"
+          + "Environment" = "production"
+          + "Owner"       = "devops@terrakube.io"
+        }
+    }
+
+  # aws_s3_bucket_public_access_block.insecure will be created
+  + resource "aws_s3_bucket_public_access_block" "insecure" {
+      + block_public_acls       = false
+      + block_public_policy     = true
+      + bucket                  = (known after apply)
+      + ignore_public_acls      = true
+      + restrict_public_buckets = true
+    }
+
+Plan: 3 to add, 0 to change, 0 to destroy.
+
+
+
+============================================================
+       TERRAKUBE OPEN POLICY AGENT (OPA) GOVERNANCE        
+============================================================
+
+🔍 Checking Policy Set: aws-security-baseline (Level: HARD_MANDATORY)
+  [DENY] Rule 'aws_ebs_encryption_required' failed on 'aws_ebs_volume.insecure': AWS EBS Volumes must have server-side encryption enabled (encrypted = true).
+  [DENY] Rule 'aws_s3_public_access_block' failed on 'aws_s3_bucket_public_access_block.insecure': S3 Public Access Block must enable block_public_acls, block_public_policy, ignore_public_acls, and restrict_public_buckets.
+
+🔍 Checking Policy Set: azure-security-baseline (Level: HARD_MANDATORY)
+  ✔ All policy rules passed.
+
+🔍 Checking Policy Set: gcp-security-baseline (Level: HARD_MANDATORY)
+  ✔ All policy rules passed.
+
+------------------------------------------------------------
+⛔ [OPA POLICY FAILURE] 2 hard-mandatory violation(s) detected. Plan blocked.
+============================================================
+```
+
 
