@@ -77,7 +77,8 @@ terrakube-opa-reference/
 │   ├── password-advisory/       # Cloud-free advisory warning (length 12..15)
 │   ├── password-soft-fail/      # Cloud-free soft mandatory override (length 8..11)
 │   ├── password-hard-fail/      # Cloud-free hard mandatory block (length < 8)
-│   └── password-exempted/       # Demonstrates PolicyExemption waiver bypassing hard rule
+│   ├── password-exempted/       # Demonstrates PolicyExemption waiver bypassing hard rule
+│   └── password-advisory-soft-fail/ # Demonstrates combined advisory warning and soft mandatory override
 ├── terrakube-governance/        # Terraform HCL code to manage policy sets via Terrakube Provider
 ├── CONTRIBUTING.md              # Policy authoring standards and contract details
 └── README.md
@@ -331,16 +332,17 @@ To simplify OPA evaluation testing without requiring cloud provider credentials,
 | **Soft Mandatory** | `examples/password-soft-fail` | `10` (8..11) | `WAITING_APPROVAL` | Pauses execution; requires authorized `TERRAKUBE_ADMIN` override approval. |
 | **Hard Mandatory** | `examples/password-hard-fail` | `6` (< 8) | `FAILED` | Strictly halts execution with exit code `1`; blocks Apply. |
 | **Policy Exemption** | `examples/password-exempted` | `6` (< 8) | `PASSED (WITH EXEMPTION)` | Violation bypassed via active `PolicyExemption` (ticket `SEC-101`); permits Apply. |
+| **Advisory & Soft Mandatory** | `examples/password-advisory-soft-fail` | `14` & `10` | `WAITING_APPROVAL` | Emits advisory warning and pauses for `TERRAKUBE_ADMIN` override approval. |
 
 ### Terrakube 'simple-governance' Demo Organization
 
 Terrakube provides out-of-the-box demo seed data under the `demo` Spring Boot profile creating the `simple-governance` organization:
 - **Dual IaC Engine Architecture**:
-  - `governance-terraform` project: Workspaces running Terraform `1.15.9`.
-  - `governance-tofu` project: Workspaces running OpenTofu `1.11.14`.
+  - `governance-terraform` project: Workspaces running Terraform `1.15.9` (`tf-pwd-compliant`, `tf-pwd-advisory`, `tf-pwd-soft-fail`, `tf-pwd-hard-fail`, `tf-pwd-exempted`, `tf-pwd-advisory-soft-fail`).
+  - `governance-tofu` project: Workspaces running OpenTofu `1.11.14` (`tofu-pwd-compliant`, `tofu-pwd-advisory`, `tofu-pwd-soft-fail`, `tofu-pwd-hard-fail`, `tofu-pwd-exempted`, `tofu-pwd-advisory-soft-fail`).
 - **Pre-Bound Policies**:
   - `password-length-advisory`: Fleet-wide `global` policy set.
-  - `password-length-soft-mandatory`: Attached to `tf-pwd-soft-fail` and `tofu-pwd-soft-fail` (`override_team = "TERRAKUBE_ADMIN"`).
+  - `password-length-soft-mandatory`: Attached to soft-fail and combined advisory/soft-fail workspaces (`override_team = "TERRAKUBE_ADMIN"`).
   - `password-length-hard-mandatory`: Attached to hard-fail and exempted workspaces.
   - `password-length-shadow`: Attached to compliant workspaces demonstrating shadow evaluation.
   - Active `PolicyExemption` records granting time-bounded waivers for `tf-pwd-exempted` and `tofu-pwd-exempted`.
