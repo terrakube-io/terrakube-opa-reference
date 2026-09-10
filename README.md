@@ -60,15 +60,24 @@ terrakube-opa-reference/
 │   │   ├── tagging/             # [Advisory] Mandatory tags (Environment, Owner, CostCenter)
 │   │   ├── blast_radius/        # [Soft Mandatory] Prevents accidental bulk deletions
 │   │   └── required_providers/  # [Hard Mandatory] Whitelist of approved provider registries
+│   ├── password/                # Cloud-free password policy suite
+│   │   ├── advisory/            # [Advisory] Warns if password length < 16
+│   │   ├── soft_mandatory/      # [Soft Mandatory] Requires SecOps override if length 8..11
+│   │   └── hard_mandatory/      # [Hard Mandatory] Blocks apply if length < 8
 │   ├── aws/baseline/            # [Hard Mandatory] S3 public block, EBS encryption, IMDSv2
 │   ├── azure/baseline/          # [Hard Mandatory] Storage HTTPS/TLS 1.2, restricted NSG ports
 │   └── gcp/baseline/            # [Hard Mandatory] Uniform bucket access, VM public IP ban
 ├── fixtures/                    # Synthetic terraform show -json plan fixtures for test suites
-├── examples/                    # Live Terraform workspaces demonstrating runtime outcomes
+├── examples/                    # Live Terraform & OpenTofu workspaces demonstrating runtime outcomes
 │   ├── compliant-workspace/     # Passes all policy checks
 │   ├── advisory-warning-workspace/ # Emits advisory warnings without blocking
 │   ├── soft-fail-workspace/     # Triggers soft mandatory override approval
-│   └── hard-fail-workspace/     # Triggers hard mandatory block (exit code 1)
+│   ├── hard-fail-workspace/     # Triggers hard mandatory block (exit code 1)
+│   ├── password-compliant/      # Cloud-free compliant password (length >= 16)
+│   ├── password-advisory/       # Cloud-free advisory warning (length 12..15)
+│   ├── password-soft-fail/      # Cloud-free soft mandatory override (length 8..11)
+│   ├── password-hard-fail/      # Cloud-free hard mandatory block (length < 8)
+│   └── password-exempted/       # Demonstrates PolicyExemption waiver bypassing hard rule
 ├── terrakube-governance/        # Terraform HCL code to manage policy sets via Terrakube Provider
 ├── CONTRIBUTING.md              # Policy authoring standards and contract details
 └── README.md
@@ -83,6 +92,9 @@ terrakube-opa-reference/
 | `bundles/common/tagging` | Cloud resources | `advisory` | Warns if `Environment`, `Owner`, or `CostCenter` tags are absent. Configurable via policy inputs. |
 | `bundles/common/blast_radius` | All resources | `soft_mandatory` | Halts execution for SecOps approval if `> 5` deletions or weighted risk score `> 25`. |
 | `bundles/common/required_providers` | Providers | `hard_mandatory` | Disallows unapproved registries (whitelists HashiCorp, OpenTofu, and internal registries). |
+| `bundles/password/advisory` | `random_password` | `advisory` | Cloud-free rule recommending password length >= 16 characters. |
+| `bundles/password/soft_mandatory` | `random_password` | `soft_mandatory` | Requires SecOps/Admin override if password length is between 8 and 11 characters. |
+| `bundles/password/hard_mandatory` | `random_password` | `hard_mandatory` | Strictly blocks Apply if password length is less than 8 characters. |
 | `bundles/aws/baseline` | AWS S3, EBS, EC2 | `hard_mandatory` | Requires S3 public access blocks, EBS volume encryption, and IMDSv2 tokens on EC2 instances. |
 | `bundles/azure/baseline` | Azure Storage, NSG | `hard_mandatory` | Enforces HTTPS and TLS 1.2+ on storage accounts; blocks inbound SSH (22) and RDP (3389) from Internet. |
 | `bundles/gcp/baseline` | GCP Storage, Compute | `hard_mandatory` | Requires uniform bucket-level access; prohibits public external IP addresses on compute instances. |
@@ -305,5 +317,32 @@ Plan: 3 to add, 0 to change, 0 to destroy.
 ⛔ [OPA POLICY FAILURE] 2 hard-mandatory violation(s) detected. Plan blocked.
 ============================================================
 ```
+
+---
+
+## Cloud-Free Password Policy Suite & Policy Exemptions
+
+To simplify OPA evaluation testing without requiring cloud provider credentials, the `bundles/password/` suite evaluates `random_password` resources across all three enforcement tiers plus policy exemptions:
+
+| Scenario | Example Directory | Password Length | OPA Policy Result | Workflow Action |
+| :--- | :--- | :--- | :--- | :--- |
+| **Compliant** | `examples/password-compliant` | `16` (>= 16) | `PASSED` | Plan succeeds; automatically proceeds to Apply. |
+| **Advisory** | `examples/password-advisory` | `14` (12..15) | `WARNING` | Logs ANSI advisory recommendation; automatically proceeds to Apply. |
+| **Soft Mandatory** | `examples/password-soft-fail` | `10` (8..11) | `WAITING_APPROVAL` | Pauses execution; requires authorized `TERRAKUBE_ADMIN` override approval. |
+| **Hard Mandatory** | `examples/password-hard-fail` | `6` (< 8) | `FAILED` | Strictly halts execution with exit code `1`; blocks Apply. |
+| **Policy Exemption** | `examples/password-exempted` | `6` (< 8) | `PASSED (WITH EXEMPTION)` | Violation bypassed via active `PolicyExemption` (ticket `SEC-101`); permits Apply. |
+
+### Terrakube 'simple-governance' Demo Organization
+
+Terrakube provides out-of-the-box demo seed data under the `demo` Spring Boot profile creating the `simple-governance` organization:
+- **Dual IaC Engine Architecture**:
+  - `governance-terraform` project: Workspaces running Terraform `1.15.9`.
+  - `governance-tofu` project: Workspaces running OpenTofu `1.11.14`.
+- **Pre-Bound Policies**:
+  - `password-length-advisory`: Fleet-wide `global` policy set.
+  - `password-length-soft-mandatory`: Attached to `tf-pwd-soft-fail` and `tofu-pwd-soft-fail` (`override_team = "TERRAKUBE_ADMIN"`).
+  - `password-length-hard-mandatory`: Attached to hard-fail and exempted workspaces.
+  - `password-length-shadow`: Attached to compliant workspaces demonstrating shadow evaluation.
+  - Active `PolicyExemption` records granting time-bounded waivers for `tf-pwd-exempted` and `tofu-pwd-exempted`.
 
 
