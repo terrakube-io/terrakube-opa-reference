@@ -63,7 +63,8 @@ terrakube-opa-reference/
 │   ├── password/                # Cloud-free password policy suite
 │   │   ├── advisory/            # [Advisory] Warns if password length < 16
 │   │   ├── soft_mandatory/      # [Soft Mandatory] Requires SecOps override if length 8..11
-│   │   └── hard_mandatory/      # [Hard Mandatory] Blocks apply if length < 8
+│   │   ├── hard_mandatory/      # [Hard Mandatory] Blocks apply if length < 8
+│   │   └── dynamic_length/      # [Hard Mandatory] Configurable minimum length via PolicySetParameter
 │   ├── aws/baseline/            # [Hard Mandatory] S3 public block, EBS encryption, IMDSv2
 │   ├── azure/baseline/          # [Hard Mandatory] Storage HTTPS/TLS 1.2, restricted NSG ports
 │   └── gcp/baseline/            # [Hard Mandatory] Uniform bucket access, VM public IP ban
@@ -78,7 +79,8 @@ terrakube-opa-reference/
 │   ├── password-soft-fail/      # Cloud-free soft mandatory override (length 8..11)
 │   ├── password-hard-fail/      # Cloud-free hard mandatory block (length < 8)
 │   ├── password-exempted/       # Demonstrates PolicyExemption waiver bypassing hard rule
-│   └── password-advisory-soft-fail/ # Demonstrates combined advisory warning and soft mandatory override
+│   ├── password-advisory-soft-fail/ # Demonstrates combined advisory warning and soft mandatory override
+│   └── password-parameter/      # Demonstrates hard mandatory failure triggered by policy set parameter
 ├── terrakube-governance/        # Terraform HCL code to manage policy sets via Terrakube Provider
 ├── CONTRIBUTING.md              # Policy authoring standards and contract details
 └── README.md
@@ -96,6 +98,7 @@ terrakube-opa-reference/
 | `bundles/password/advisory` | `random_password` | `advisory` | Cloud-free rule recommending password length >= 16 characters. |
 | `bundles/password/soft_mandatory` | `random_password` | `soft_mandatory` | Requires SecOps/Admin override if password length is between 8 and 11 characters. |
 | `bundles/password/hard_mandatory` | `random_password` | `hard_mandatory` | Strictly blocks Apply if password length is less than 8 characters. |
+| `bundles/password/dynamic_length` | `random_password` | `hard_mandatory` | Dynamic minimum password length configured via PolicySetParameter (`min_length`). |
 | `bundles/aws/baseline` | AWS S3, EBS, EC2 | `hard_mandatory` | Requires S3 public access blocks, EBS volume encryption, and IMDSv2 tokens on EC2 instances. |
 | `bundles/azure/baseline` | Azure Storage, NSG | `hard_mandatory` | Enforces HTTPS and TLS 1.2+ on storage accounts; blocks inbound SSH (22) and RDP (3389) from Internet. |
 | `bundles/gcp/baseline` | GCP Storage, Compute | `hard_mandatory` | Requires uniform bucket-level access; prohibits public external IP addresses on compute instances. |
