@@ -1,0 +1,63 @@
+{
+  "infracost": {
+    "status": "SUCCESS",
+    "version": "0.2",
+    "currency": "USD",
+    "totalMonthlyCost": "360.32",
+    "totalHourlyCost": "0.4936",
+    "pastTotalMonthlyCost": "0.00",
+    "pastTotalHourlyCost": "0.0000",
+    "diffTotalMonthlyCost": "360.32",
+    "diffTotalHourlyCost": "0.4936",
+    "timeGenerated": "2026-11-21T12:00:00Z",
+    "summary": {
+      "totalDetectedResources": 2,
+      "totalSupportedResources": 2,
+      "totalUnsupportedResources": 0,
+      "totalUsageBasedResources": 0,
+      "totalNoPriceResources": 0
+    },
+    "projects": [
+      {
+        "name": "aws-cost-soft-fail",
+        "metadata": {
+          "path": ".",
+          "type": "terraform_plan_json"
+        },
+        "breakdown": {
+          "totalMonthlyCost": "360.32",
+          "resources": [
+            {
+              "name": "aws_instance.compute",
+              "resourceType": "aws_instance",
+              "monthlyCost": "280.32",
+              "costComponents": [
+                {
+                  "name": "Instance usage (Linux/UNIX, on-demand, m5.2xlarge)",
+                  "unit": "hours",
+                  "monthlyQuantity": "730",
+                  "price": "0.384",
+                  "monthlyCost": "280.32"
+                }
+              ]
+            },
+            {
+              "name": "aws_ebs_volume.analytics",
+              "resourceType": "aws_ebs_volume",
+              "monthlyCost": "80.00",
+              "costComponents": [
+                {
+                  "name": "Storage (general purpose SSD, gp3)",
+                  "unit": "GB-months",
+                  "monthlyQuantity": "1000",
+                  "price": "0.08",
+                  "monthlyCost": "80.00"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
